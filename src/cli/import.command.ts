@@ -1,26 +1,36 @@
 import {Command} from './command.interface.js';
-import {TSVFilerReader} from '../shared/libs/file-reader/tsv-file-reader.js';
+import {TSVFileReader} from '../shared/libs/file-reader/index.js';
+import chalk from 'chalk';
+import {createOffer, getErrorMessage} from '../shared/helpers/index.js';
 
 export class ImportCommand implements Command {
+  private readonly name = '--import';
+
   public getName(): string {
-    return '--import';
+    return this.name;
   }
 
-  public execute(...parameters: string[]) {
+  private onImportedLine(line: string){
+    const offer = createOffer(line);
+    console.info(offer);
+  }
+
+  private onCompletedImport(count: number) {
+    console.info(`${count} rows imported`);
+  }
+
+  public async execute(...parameters: string[]): Promise<void> {
     const [filename] = parameters;
-    const fileReader = new TSVFilerReader(filename.trim());
+    const fileReader = new TSVFileReader(filename.trim());
+
+    fileReader.on('line', this.onImportedLine);
+    fileReader.on('end', this.onCompletedImport);
 
     try{
-      fileReader.read();
-      console.log(fileReader.toArray());
-    } catch (err: unknown) {
-
-      if(!(err instanceof Error)) {
-        throw err;
-      }
-
-      console.error(`Can't import data from file: ${filename}`);
-      console.error(`Details: ${err.message}`);
+      await fileReader.read();
+    } catch (error: unknown) {
+      console.error(chalk.red(`Can't import data from file: ${filename}`));
+      console.error(chalk.red(getErrorMessage(error)));
     }
   }
 }

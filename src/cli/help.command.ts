@@ -1,20 +1,23 @@
 import {Command} from './command.interface.js';
+import chalk from 'chalk';
 
 export class HelpCommand implements Command {
+  private readonly name = '--help';
+
   public getName(): string {
-    return '--help';
+    return this.name;
   }
 
   public async execute(..._parameters: string[]): Promise<void> {
     console.info(`
     Программа для подготовки данных для REST API сервера.
-        Пример:
+        ${chalk.blue('Пример:')}
             cli.js --<command> [--arguments]
-        Команды:
-            --version:                   # выводит номер версии
-            --help:                      # печатает этот текст
-            --import <path>:             # импортирует данные из TSV
-            --generate <n> <path> <url>  # генерирует произвольное количество тестовых данных
+        ${chalk.blue('Команды:')}
+            --version:                   ${chalk.green('# выводит версию проекта в семантическом версионировании')}
+            --help:                      ${chalk.green('# выводит информацию по доступным командам')}
+            --import <path>:             ${chalk.green('# импортирует данные из TSV файла по указанному пути')}
+            --generate <n> <path> <url>  ${chalk.green('# генерирует указанное количество тестовых данных по указанному пути с указанного url сервера')}
     `);
   }
 }

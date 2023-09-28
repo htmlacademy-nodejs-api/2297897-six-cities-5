@@ -1,6 +1,8 @@
 import {Command} from './command.interface.js';
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
+import {getErrorMessage} from '../shared/helpers/index.js';
+import chalk from 'chalk';
 
 type PackageJSONConfig = {
   version: string;
@@ -16,6 +18,8 @@ function isPackageJSONConfig(value: unknown): value is PackageJSONConfig {
 }
 
 export class VersionCommand implements Command {
+  private readonly name = '--version';
+
   constructor(
     private readonly filePath: string = './package.json'
   ) {}
@@ -24,25 +28,22 @@ export class VersionCommand implements Command {
     const jsonFile: string = readFileSync(resolve(this.filePath), 'utf-8');
     const parsedContent = JSON.parse(jsonFile);
     if (!isPackageJSONConfig(parsedContent)){
-      throw new Error('Failed to read version...');
+      throw new Error('Failed to parse JSON content...');
     }
     return parsedContent.version;
   }
 
   public getName() {
-    return '--version';
+    return this.name;
   }
 
-  public async execute(..._parameters: string[]): Promise<void> {
+  public execute(..._parameters: string[]): void {
     try {
       const version = this.readVersion();
       console.info(version);
     } catch (error: unknown) {
-      console.error(`Failed to read file at path: ${this.filePath}`);
-
-      if(error instanceof Error) {
-        console.error(error.message);
-      }
+      console.error(chalk.red(`Failed to read file at path: ${this.filePath}`));
+      console.error(chalk.red(getErrorMessage(error)));
     }
   }
 }
