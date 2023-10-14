@@ -15,8 +15,6 @@ tags:
     description: Действия с пользователями.
   - name: comments
     description: Действия с комментариями.
-  - name: favorites
-    description: Действия с избранными предложениями.
 
 paths:
   /users/register:
@@ -98,7 +96,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/user'
 
-        "401":
+        "403":
           description: Доступ запрещен.
 
   /users/{userId}/avatar:
