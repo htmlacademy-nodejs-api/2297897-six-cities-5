@@ -1,16 +1,26 @@
-import {Logger} from '../shared/libs/logger/index.js';
-import {Config, RestSchema} from '../shared/libs/config/index.js';
+import express, {Express} from 'express';
 import {inject, injectable} from 'inversify';
-import {Components} from '../shared/types/index.js';
-import {DatabaseClient} from '../shared/libs/database-client/index.js';
+
 import {getMongoURI} from '../shared/helpers/index.js';
+import {Config, RestSchema} from '../shared/libs/config/index.js';
+import {DatabaseClient} from '../shared/libs/database-client/index.js';
+import {Logger} from '../shared/libs/logger/index.js';
+import {ExceptionFilter} from '../shared/libs/rest/index.js';
+import {Controller} from '../shared/libs/rest/index.js';
+import {Components} from '../shared/types/index.js';
 
 @injectable()
 export class RestApplication {
+  private server: Express = express();
+
   constructor(
     @inject(Components.Logger) private readonly logger: Logger,
     @inject(Components.Config) private readonly config: Config<RestSchema>,
     @inject(Components.DatabaseClient) private readonly databaseClient: DatabaseClient,
+    @inject(Components.UserController) private readonly userController: Controller,
+    @inject(Components.CommentController) private readonly commentController: Controller,
+    @inject(Components.OfferController) private readonly offerController: Controller,
+    @inject(Components.ExceptionFilter) private readonly defaultExceptionFilter: ExceptionFilter,
   ) {}
 
   private initDb() {
@@ -25,12 +35,46 @@ export class RestApplication {
     return this.databaseClient.connect(mongoUri);
   }
 
+  private async initServer() {
+    const port = this.config.get('PORT');
+    this.server.listen(port);
+  }
+
+  private async initControllers() {
+    this.server.use('/offers', this.offerController.router);
+    this.server.use('/users', this.userController.router);
+    this.server.use('/comments', this.commentController.router);
+  }
+
+  private async initMiddleware() {
+    this.server.use(express.json());
+  }
+
+  private async initExceptionFilter() {
+    this.server.use(this.defaultExceptionFilter.catch.bind(this.defaultExceptionFilter));
+  }
+
   public async init(): Promise<void> {
     this.logger.info('Application Initialization');
-    this.logger.info(`Get value from env $PORT: ${this.config.get('PORT')}`);
 
     this.logger.info('Initializing the database...');
     await this.initDb();
     this.logger.info('Database is initialized');
+
+    this.logger.info('Initializing app-level middleware...');
+    await this.initMiddleware();
+    this.logger.info('Controller initialization completed');
+
+    this.logger.info('Initializing controllers...');
+    await this.initControllers();
+    this.logger.info('Controller initialization completed');
+
+    this.logger.info('Initializing exception filters...');
+    await this.initExceptionFilter();
+    this.logger.info('Exception filters initialization completed');
+
+    this.logger.info('Try to init server...');
+    await this.initServer();
+    this.logger.info(`Server started on http://localhost:${this.config.get('PORT')}`);
   }
 }
