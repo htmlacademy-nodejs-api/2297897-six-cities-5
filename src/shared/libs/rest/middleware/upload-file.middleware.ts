@@ -4,14 +4,14 @@ import {NextFunction, Request, Response} from 'express';
 import {extension} from 'mime-types';
 import multer, {diskStorage} from 'multer';
 
+import {filterUploadMiddlewareFile} from '../../../helpers/index.js';
 import {Middleware} from './middleware.interface.js';
 
 export class UploadFileMiddleware implements Middleware {
   constructor(
     private uploadDirectory: string,
     private fieldName: string,
-  ) {
-  }
+  ) {}
 
   public async execute(req: Request, res: Response, next: NextFunction) {
     const storage = diskStorage({
@@ -23,7 +23,10 @@ export class UploadFileMiddleware implements Middleware {
       },
     });
 
-    const uploadSingleFileMiddleware = multer({storage})
+    const uploadSingleFileMiddleware = multer({
+      storage,
+      fileFilter: filterUploadMiddlewareFile
+    })
       .single(this.fieldName);
 
     uploadSingleFileMiddleware(req, res, next);

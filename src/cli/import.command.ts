@@ -13,9 +13,9 @@ import {Command} from './command.interface.js';
 export class ImportCommand implements Command {
   private readonly name = '--import';
   private readonly logger: Logger;
-  private offerService: OfferService;
-  private userService: UserService;
-  private databaseClient: DatabaseClient;
+  private readonly offerService: OfferService;
+  private readonly userService: UserService;
+  private readonly databaseClient: DatabaseClient;
   private salt: string;
 
   constructor() {
@@ -46,6 +46,7 @@ export class ImportCommand implements Command {
   private async saveOffer(offer: Offer) {
     const user = await this.userService.findOrCreate({
       ...offer.author,
+      favoriteOffers: [],
       password: DEFAULT_USER_PASSWORD
     }, this.salt);
 

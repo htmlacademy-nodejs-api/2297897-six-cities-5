@@ -9,16 +9,22 @@ import {
   BaseController,
   DocumentExistsMiddleware,
   HttpError,
-  HttpMethods, PrivateRouteMiddleware, UploadFileMiddleware,
-  ValidateDtoMiddleware, ValidateObjectIdMiddleware
+  HttpMethods,
+  PrivateRouteMiddleware,
+  UploadFileMiddleware,
+  ValidateDtoMiddleware,
+  ValidateObjectIdMiddleware
 } from '../../libs/rest/index.js';
 import {Components} from '../../types/index.js';
 import {AuthService} from '../auth/index.js';
+import {OfferService} from '../offer/index.js';
 import {CreateUserDto} from './dto/create-user.dto.js';
+import {FavoriteOfferDto} from './dto/favorite-offer.dto.js';
 import {LoginUserDto} from './dto/login-user.dto.js';
 import {UpdateUserDto} from './dto/update-user.dto.js';
 import {LoginUserRequest} from './login-user-request.type.js';
 import {LoggedUserRdo} from './rdo/logged-user.rdo.js';
+import {UploadUserAvatarRdo} from './rdo/upload-user-avatar.rdo.js';
 import {UserRdo} from './rdo/user.rdo.js';
 import {CreateUserRequest} from './types/create-user-request.type.js';
 import {ParamUserId} from './types/param-userid.types.js';
@@ -29,12 +35,23 @@ export class UserController extends BaseController {
   constructor(
     @inject(Components.Logger) protected readonly logger: Logger,
     @inject(Components.UserService) protected readonly userService: UserService,
+    @inject(Components.OfferService) protected readonly offerService: OfferService,
     @inject(Components.Config) protected readonly config: Config<RestSchema>,
     @inject(Components.AuthService) protected readonly authService: AuthService
   ) {
     super(logger);
 
     this.logger.info('Register routes for UserController...');
+
+    this.addRoute({
+      path: '/favorites',
+      method: HttpMethods.Patch,
+      handler: this.updateFavorites,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateDtoMiddleware(FavoriteOfferDto)
+      ]
+    });
 
     this.addRoute({
       path: '/register',
@@ -60,6 +77,13 @@ export class UserController extends BaseController {
     });
 
     this.addRoute({
+      path: '/:email',
+      method: HttpMethods.Get,
+      handler: this.show,
+    });
+
+
+    this.addRoute({
       path: '/:userId',
       method: HttpMethods.Patch,
       handler: this.update,
@@ -73,7 +97,8 @@ export class UserController extends BaseController {
       path: '/:userId/avatar',
       method: HttpMethods.Patch,
       handler: this.uploadAvatar,
-      middlewares: [ //TODO: Только авторизованным?
+      middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('userId'),
         new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
         new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar'),
@@ -81,11 +106,24 @@ export class UserController extends BaseController {
     });
   }
 
+  public async show({params: {email}}: Request, res: Response) {
+    const user = await this.userService.findByEmail(email);
+
+    if(!user) {
+      throw new HttpError(
+        StatusCodes.NOT_FOUND,
+        `User, with email: «${email}», not exists`,
+        'UserController'
+      );
+    }
+
+    this.ok(res, fillDTO(UserRdo, user));
+  }
 
   public async checkAuthenticate({tokenPayload: {email}}: Request, res: Response){
-    const foundedUser = await this.userService.findByEmail(email);
+    const user = await this.userService.findByEmail(email);
 
-    if(!foundedUser) {
+    if(!user) {
       throw new HttpError(
         StatusCodes.UNAUTHORIZED,
         'Unauthorized',
@@ -93,13 +131,21 @@ export class UserController extends BaseController {
       );
     }
 
-    this.ok(res, fillDTO(UserRdo, foundedUser));
+    this.ok(res, fillDTO(UserRdo, user));
   }
 
   public async create(
-    {body}: CreateUserRequest,
+    {body, tokenPayload}: CreateUserRequest,
     res: Response
   ): Promise<void> {
+    if(tokenPayload){
+      throw new HttpError(
+        StatusCodes.FORBIDDEN,
+        'An authorized user cannot create a new one',
+        'UserController'
+      );
+    }
+
     const existsUser = await this.userService.findByEmail(body.email);
 
     if(existsUser) {
@@ -120,10 +166,8 @@ export class UserController extends BaseController {
   ) {
     const user = await this.authService.verify(body);
     const token = await this.authService.authenticate(user);
-    const responseData = fillDTO(LoggedUserRdo, {
-      email: user.email,
-      token
-    });
+
+    const responseData = fillDTO(LoggedUserRdo, Object.assign(user, {token}));
 
     this.ok(res, responseData);
   }
@@ -139,9 +183,54 @@ export class UserController extends BaseController {
     this.ok(res, fillDTO(UserRdo, updatedUser));
   }
 
-  public async uploadAvatar(req: Request, res: Response) {
-    this.created(res, {
-      filepath: req.file?.path
+  public async uploadAvatar({params, file}: Request, res: Response) {
+    if(!file) {
+      throw new HttpError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        'No file selected for upload',
+        'UserController',
+      );
+    }
+
+    const {userId} = params;
+    const updateDto = {avatarUrl: file.filename};
+    await this.userService.updateById(userId, updateDto);
+    this.created(res, fillDTO(UploadUserAvatarRdo, updateDto));
+  }
+
+  public async updateFavorites(
+    {body, tokenPayload: {id, email}}: Request,
+    res: Response
+  ) {
+    if (!(await this.offerService.exists(body.offerId))) {
+      throw new HttpError(
+        StatusCodes.NOT_FOUND,
+        `Offer with id ${body.offerId} not found`,
+        'UserController'
+      );
+    }
+
+    const user = await this.userService.findByEmail(email);
+
+    if(!user){
+      throw new HttpError(
+        StatusCodes.NOT_FOUND,
+        'User undefined',
+        'UserController',
+      );
+    }
+
+    const favorites = new Set(user.favoriteOffers.map((offer) => offer.toString()));
+
+    if(body.isFavorite){
+      favorites.add(body.offerId);
+    } else {
+      favorites.delete(body.offerId);
+    }
+
+    await this.userService.updateById(id, {
+      favoriteOffers: [...favorites],
     });
+    this.noContent(res, null);
   }
 }

@@ -5,6 +5,7 @@ import {Logger} from '../../libs/logger/index.js';
 import {Components} from '../../types/index.js';
 import {CreateUserDto} from './dto/create-user.dto.js';
 import {UpdateUserDto} from './dto/update-user.dto.js';
+import {DEFAULT_AVATAR_FILE_NAME} from './user.constant.js';
 import {UserEntity} from './user.entity.js';
 import {UserService} from './user-service.interface.js';
 
@@ -20,7 +21,7 @@ export class DefaultUserService implements UserService {
   }
 
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
-    const user = new UserEntity(dto);
+    const user = new UserEntity({...dto, avatarUrl: dto.avatarUrl ? dto.avatarUrl : DEFAULT_AVATAR_FILE_NAME});
     user.setPassword(dto.password, salt);
 
     const result = await this.userModel.create(user);
@@ -29,14 +30,14 @@ export class DefaultUserService implements UserService {
     return result;
   }
 
-  public async findByEmail(email:string): Promise<DocumentType<UserEntity> | null> {
+  public async findByEmail(email: string): Promise<DocumentType<UserEntity> | null> {
     return this.userModel.findOne({email});
   }
 
   public async findOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
     const existedUser = await this.findByEmail(dto.email);
 
-    if(existedUser){
+    if (existedUser) {
       return existedUser;
     }
 
