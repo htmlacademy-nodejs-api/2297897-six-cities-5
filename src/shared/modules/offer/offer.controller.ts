@@ -24,6 +24,7 @@ import {CreateOfferDto} from './dto/create-offer.dto.js';
 import {UpdateOfferDto} from './dto/update-offer.dto.js';
 import {OfferService} from './offer-service.interface.js';
 import {OfferRdo} from './rdo/offer.rdo.js';
+import {OfferPreviewRdo} from './rdo/offer-preview.rdo.js';
 import {UploadPlaceImagesRdo} from './rdo/upload-place-images.rdo.js';
 import {UploadPreviewImageRdo} from './rdo/upload-preview-image.rdo.js';
 import {CreateOfferRequest} from './types/create-offer-request.type.js';
@@ -118,6 +119,8 @@ export class OfferController extends BaseController {
       middlewares: [
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new ValidateAuthorMiddleware(this.offerService, 'Offer', 'offerId'),
         new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'previewImage'),
       ]
     });
@@ -129,6 +132,8 @@ export class OfferController extends BaseController {
       middlewares: [
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new ValidateAuthorMiddleware(this.offerService, 'Offer', 'offerId'),
         new UploadFilesMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'placeImages'),
       ]
     });
@@ -141,11 +146,11 @@ export class OfferController extends BaseController {
   }
 
   public async index({tokenPayload, query}: Request, res: Response) {
-    const count = Number(query?.count) ?? undefined;
+    const count = query.count ? Number(query.count) : undefined;
     const offers = tokenPayload
       ? await this.offerService.find(count, tokenPayload.id)
       : await this.offerService.find(count);
-    this.ok(res, fillDTO(OfferRdo, offers));
+    this.ok(res, fillDTO(OfferPreviewRdo, offers));
   }
 
   public async show({params, tokenPayload}: Request<ParamOfferId>, res: Response) {
@@ -162,6 +167,7 @@ export class OfferController extends BaseController {
     {body, tokenPayload}: CreateOfferRequest,
     res: Response
   ) {
+    console.log(body);
     const result = await this.offerService.create({...body, authorId: tokenPayload.id });
     const createdOffer = await this.offerService.findById(result.id);
 
@@ -231,7 +237,7 @@ export class OfferController extends BaseController {
   public async findFavorites({tokenPayload}: Request, res: Response){
     const favoriteOffers = await this.offerService.findFavorites(tokenPayload.id);
 
-    this.ok(res, fillDTO(OfferRdo, favoriteOffers));
+    this.ok(res, fillDTO(OfferPreviewRdo, favoriteOffers));
   }
 
   public async findPremiumByCity({params, tokenPayload}: Request, res: Response) {
@@ -242,6 +248,6 @@ export class OfferController extends BaseController {
       ? await this.offerService.findPremiumByCity(city, tokenPayload.id)
       : await this.offerService.findPremiumByCity(city);
 
-    this.ok(res, fillDTO(OfferRdo, premiumOffers));
+    this.ok(res, fillDTO(OfferPreviewRdo, premiumOffers));
   }
 }
