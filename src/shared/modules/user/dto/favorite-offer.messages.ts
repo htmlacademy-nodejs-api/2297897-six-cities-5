@@ -1,8 +1,8 @@
-export const FavoriteOfferValidationMessages = {
-  OfferId: {
-    invalidFormat: 'offerId must be valid MongoID'
+export const FAVORITE_OFFER_VALIDATION_MESSAGES = {
+  OFFER_ID: {
+    INVALID_FORMAT: 'offerId must be valid MongoID'
   },
-  IsPremium: {
-    invalidFormat: 'isPremium status must be boolean'
+  IS_PREMIUM: {
+    INVALID_FORMAT: 'isPremium status must be boolean'
   }
 };

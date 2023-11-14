@@ -7,56 +7,56 @@ import {
 
 import {Cities, Conveniences, PlacesTypes} from '../../../types/index.js';
 import {OFFER_CONSTANT_VALUES} from '../offer.constant.js';
-import {CreateOfferValidationMessages} from './create-offer.messages.js';
+import {CREATE_OFFER_VALIDATION_MESSAGES} from './create-offer.messages.js';
 import {OfferCoordinatesDto} from './offer-coordinates.dto.js';
 
 export class CreateOfferDto {
-  @Length(OFFER_CONSTANT_VALUES.Name.minLength, OFFER_CONSTANT_VALUES.Name.maxLength, {message: CreateOfferValidationMessages.Name.lengthField})
+  @Length(OFFER_CONSTANT_VALUES.NAME.MIN_LENGTH, OFFER_CONSTANT_VALUES.NAME.MAX_LENGTH, {message: CREATE_OFFER_VALIDATION_MESSAGES.NAME.LENGTH_FIELD})
   public name: string;
 
-  @Length(OFFER_CONSTANT_VALUES.Description.minLength, OFFER_CONSTANT_VALUES.Description.maxLength, {message: CreateOfferValidationMessages.Description.lengthField})
+  @Length(OFFER_CONSTANT_VALUES.DESCRIPTION.MIN_LENGTH, OFFER_CONSTANT_VALUES.DESCRIPTION.MAX_LENGTH, {message: CREATE_OFFER_VALIDATION_MESSAGES.DESCRIPTION.LENGTH_FIELD})
   public description: string;
 
-  @IsDateString({}, {message: CreateOfferValidationMessages.PostDate.invalidFormat})
+  @IsDateString({}, {message: CREATE_OFFER_VALIDATION_MESSAGES.POST_DATE.INVALID_FORMAT})
   public postDate: string;
 
-  @IsEnum(Cities, {message: CreateOfferValidationMessages.City.invalid})
+  @IsEnum(Cities, {message: CREATE_OFFER_VALIDATION_MESSAGES.CITY.INVALID})
   public city: Cities;
 
-  @MaxLength(OFFER_CONSTANT_VALUES.PreviewImage.maxLength, {message: CreateOfferValidationMessages.PreviewImage.maxLength})
+  @MaxLength(OFFER_CONSTANT_VALUES.PREVIEW_IMAGE.MAX_LENGTH, {message: CREATE_OFFER_VALIDATION_MESSAGES.PREVIEW_IMAGE.MAX_LENGTH})
   public previewImage: string;
 
-  @ArrayMaxSize(OFFER_CONSTANT_VALUES.PlaceImages.imagesCount, {message: CreateOfferValidationMessages.PlaceImages.invalidCount})
-  @ArrayMinSize(OFFER_CONSTANT_VALUES.PlaceImages.imagesCount, {message: CreateOfferValidationMessages.PlaceImages.invalidCount})
+  @ArrayMaxSize(OFFER_CONSTANT_VALUES.PLACE_IMAGES.IMAGES_COUNT, {message: CREATE_OFFER_VALIDATION_MESSAGES.PLACE_IMAGES.INVALID_COUNT})
+  @ArrayMinSize(OFFER_CONSTANT_VALUES.PLACE_IMAGES.IMAGES_COUNT, {message: CREATE_OFFER_VALIDATION_MESSAGES.PLACE_IMAGES.INVALID_COUNT})
   public placeImages: string[];
 
-  @IsBoolean({message: CreateOfferValidationMessages.IsPremium.invalidFormat})
+  @IsBoolean({message: CREATE_OFFER_VALIDATION_MESSAGES.IS_PREMIUM.INVALID_FORMAT})
   public isPremium: boolean;
 
-  @IsBoolean({message: CreateOfferValidationMessages.IsFavorite.invalidFormat})
+  @IsBoolean({message: CREATE_OFFER_VALIDATION_MESSAGES.IS_FAVORITE.INVALID_FORMAT})
   public isFavorite: boolean;
 
-  @IsEnum(PlacesTypes, {message: CreateOfferValidationMessages.Type.invalid})
+  @IsEnum(PlacesTypes, {message: CREATE_OFFER_VALIDATION_MESSAGES.TYPE.INVALID})
   public type: PlacesTypes;
 
-  @IsInt({message: CreateOfferValidationMessages.RoomsAmount.invalidFormat})
-  @Min(OFFER_CONSTANT_VALUES.RoomsAmount.minValue, {message: CreateOfferValidationMessages.RoomsAmount.minValue})
-  @Max(OFFER_CONSTANT_VALUES.RoomsAmount.maxValue, {message: CreateOfferValidationMessages.RoomsAmount.maxValue})
+  @IsInt({message: CREATE_OFFER_VALIDATION_MESSAGES.ROOMS_AMOUNT.INVALID_FORMAT})
+  @Min(OFFER_CONSTANT_VALUES.ROOMS_AMOUNT.MIN_VALUE, {message: CREATE_OFFER_VALIDATION_MESSAGES.ROOMS_AMOUNT.MIN_VALUE})
+  @Max(OFFER_CONSTANT_VALUES.ROOMS_AMOUNT.MAX_VALUE, {message: CREATE_OFFER_VALIDATION_MESSAGES.ROOMS_AMOUNT.MAX_VALUE})
   public roomsAmount: number;
 
-  @IsInt({message: CreateOfferValidationMessages.GuestsAmount.invalidFormat})
-  @Min(OFFER_CONSTANT_VALUES.GuestsAmount.minValue, {message: CreateOfferValidationMessages.GuestsAmount.minValue})
-  @Max(OFFER_CONSTANT_VALUES.GuestsAmount.maxValue, {message: CreateOfferValidationMessages.GuestsAmount.maxValue})
+  @IsInt({message: CREATE_OFFER_VALIDATION_MESSAGES.GUESTS_AMOUNT.INVALID_FORMAT})
+  @Min(OFFER_CONSTANT_VALUES.GUESTS_AMOUNT.MIN_VALUE, {message: CREATE_OFFER_VALIDATION_MESSAGES.GUESTS_AMOUNT.MIN_VALUE})
+  @Max(OFFER_CONSTANT_VALUES.GUESTS_AMOUNT.MAX_VALUE, {message: CREATE_OFFER_VALIDATION_MESSAGES.GUESTS_AMOUNT.MAX_VALUE})
   public guestsAmount: number;
 
-  @IsInt({message: CreateOfferValidationMessages.Price.invalidFormat})
-  @Min(OFFER_CONSTANT_VALUES.Price.minValue, {message: CreateOfferValidationMessages.Price.minValue})
-  @Max(OFFER_CONSTANT_VALUES.Price.maxValue, {message: CreateOfferValidationMessages.Price.maxValue})
+  @IsInt({message: CREATE_OFFER_VALIDATION_MESSAGES.PRICE.INVALID_FORMAT})
+  @Min(OFFER_CONSTANT_VALUES.PRICE.MIN_VALUE, {message: CREATE_OFFER_VALIDATION_MESSAGES.PRICE.MIN_VALUE})
+  @Max(OFFER_CONSTANT_VALUES.PRICE.MAX_VALUE, {message: CREATE_OFFER_VALIDATION_MESSAGES.PRICE.MAX_VALUE})
   public price: number;
 
   @IsArray()
   @ArrayNotEmpty()
-  @IsEnum(Conveniences, {each: true, message: CreateOfferValidationMessages.Conveniences.invalid})
+  @IsEnum(Conveniences, {each: true, message: CREATE_OFFER_VALIDATION_MESSAGES.CONVENIENCES.INVALID})
   public conveniences: Conveniences[];
 
   @ValidateNested()

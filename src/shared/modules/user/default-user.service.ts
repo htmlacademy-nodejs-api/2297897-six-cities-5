@@ -5,7 +5,7 @@ import {Logger} from '../../libs/logger/index.js';
 import {Components} from '../../types/index.js';
 import {CreateUserDto} from './dto/create-user.dto.js';
 import {UpdateUserDto} from './dto/update-user.dto.js';
-import {DEFAULT_AVATAR_FILE_NAME} from './user.constant.js';
+import {USER_CONSTANT_VALUES} from './user.constant.js';
 import {UserEntity} from './user.entity.js';
 import {UserService} from './user-service.interface.js';
 
@@ -17,7 +17,7 @@ export class DefaultUserService implements UserService {
   ) {}
 
   public async exists(documentId: string): Promise<boolean> {
-    return (!!await this.userModel.exists({_id: documentId}));
+    return !!this.userModel.exists({_id: documentId});
   }
 
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
@@ -25,7 +25,7 @@ export class DefaultUserService implements UserService {
       ...dto,
       avatarUrl: dto.avatarUrl
         ? dto.avatarUrl :
-        DEFAULT_AVATAR_FILE_NAME
+        USER_CONSTANT_VALUES.DEFAULT_AVATAR_FILE_NAME
     });
     user.setPassword(dto.password, salt);
 

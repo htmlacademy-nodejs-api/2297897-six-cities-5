@@ -1,36 +1,34 @@
-export const DEFAULT_OFFER_COUNT = 60;
-
-export const PREMIUM_OFFERS_COUNT = 3;
-
 export const OFFER_CONSTANT_VALUES = {
-  Name: {
-    minLength: 10,
-    maxLength: 100,
+  NAME: {
+    MIN_LENGTH: 10,
+    MAX_LENGTH: 100,
   },
-  Description: {
-    minLength: 20,
-    maxLength: 1024,
+  DESCRIPTION: {
+    MIN_LENGTH: 20,
+    MAX_LENGTH: 1024,
   },
-  PreviewImage: {
-    maxLength: 256,
+  PREVIEW_IMAGE: {
+    MAX_LENGTH: 256,
   },
-  PlaceImages: {
-    imagesCount: 6,
+  PLACE_IMAGES: {
+    IMAGES_COUNT: 6,
   },
-  Rating: {
-    minValue: 1,
-    maxValue: 5,
+  RATING: {
+    MIN_VALUE: 1,
+    MAX_VALUE: 5,
   },
-  RoomsAmount: {
-    minValue: 1,
-    maxValue: 8,
+  ROOMS_AMOUNT: {
+    MIN_VALUE: 1,
+    MAX_VALUE: 8,
   },
-  GuestsAmount: {
-    minValue: 1,
-    maxValue: 10,
+  GUESTS_AMOUNT: {
+    MIN_VALUE: 1,
+    MAX_VALUE: 10,
   },
-  Price: {
-    minValue: 100,
-    maxValue: 100000,
-  }
+  PRICE: {
+    MIN_VALUE: 100,
+    MAX_VALUE: 100000,
+  },
+  DEFAULT_OFFER_COUNT: 60,
+  PREMIUM_OFFERS_COUNT: 3,
 } as const;

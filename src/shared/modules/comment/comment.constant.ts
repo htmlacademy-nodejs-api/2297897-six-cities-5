@@ -1,12 +1,12 @@
 export const COMMENT_CONSTANT_VALUES = {
-  Description: {
-    minLength: 20,
-    maxLength: 1024,
+  DESCRIPTION: {
+    MIN_LENGTH: 20,
+    MAX_LENGTH: 1024,
   },
-  Rating: {
-    minValue: 1,
-    maxValue: 5,
+  RATING: {
+    MIN_VALUE: 1,
+    MAX_VALUE: 5,
   },
+  DEFAULT_COMMENT_COUNT: 50,
 } as const;
 
-export const DEFAULT_COMMENT_COUNT = 50;

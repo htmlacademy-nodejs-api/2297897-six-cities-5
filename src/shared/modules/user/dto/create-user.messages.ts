@@ -1,24 +1,24 @@
 import {UserTypes} from '../../../types/index.js';
 
-export const CreateUserValidationMessages = {
-  Name: {
-    invalidFormat: 'name is required',
-    lengthField: 'min length is 1, max is 15',
+export const CREATE_USER_VALIDATION_MESSAGES = {
+  NAME: {
+    INVALID_FORMAT: 'name is required',
+    LENGTH_FIELD: 'min length is 1, max is 15',
   },
-  Email: {
-    invalidFormat: 'email must be a valid address'
+  EMAIL: {
+    INVALID_FORMAT: 'email must be a valid address'
   },
-  AvatarUrl: {
-    maxLength: 'Too long for field «avatarUrl»'
+  AVATAR_URL: {
+    MAX_LENGTH: 'Too long for field «avatarUrl»'
   },
-  Type: {
-    invalidFormat: `type must be ${Object.values(UserTypes).join(' | ')}`,
+  TYPE: {
+    INVALID_FORMAT: `type must be ${Object.values(UserTypes).join(' | ')}`,
   },
-  Password: {
-    invalidFormat: 'password is required',
-    lengthField: 'min length for password is 6, max is 12'
+  PASSWORD: {
+    INVALID_FORMAT: 'password is required',
+    LENGTH_FIELD: 'min length for password is 6, max is 12'
   },
-  FavoriteOffers: {
-    invalidFormat: 'favorite offers field must be an array'
+  FAVORITE_OFFERS: {
+    INVALID_FORMAT: 'favorite offers field must be an array'
   }
 } as const;

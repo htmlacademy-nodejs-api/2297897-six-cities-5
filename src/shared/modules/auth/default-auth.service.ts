@@ -1,4 +1,4 @@
-import crypto from 'node:crypto';
+import {createSecretKey} from 'node:crypto';
 
 import {inject, injectable} from 'inversify';
 import {SignJWT} from 'jose';
@@ -8,7 +8,7 @@ import {Logger} from '../../libs/logger/index.js';
 import {Components} from '../../types/index.js';
 import {LoginUserDto} from '../user/dto/login-user.dto.js';
 import {UserEntity, UserService} from '../user/index.js';
-import {JWT_ALGORITHM, JWT_EXPIRED} from './auth.constant.js';
+import {JWT_CONFIG} from './auth.constant.js';
 import {AuthService} from './auth-service.interface.js';
 import {UserNotFoundException, UserPasswordIncorrectException} from './errors/index.js';
 import {TokenPayload} from './types/token-payload.js';
@@ -24,7 +24,7 @@ export class DefaultAuthService implements AuthService {
 
   public async authenticate(user: UserEntity): Promise<string> {
     const jwtSecret = this.config.get('JWT_SECRET');
-    const secretKey = crypto.createSecretKey(jwtSecret, 'utf-8');
+    const secretKey = createSecretKey(jwtSecret, 'utf-8');
     const tokenPayload: TokenPayload = {
       email: user.email,
       name: user.name,
@@ -34,9 +34,9 @@ export class DefaultAuthService implements AuthService {
     this.logger.info(`Create token for «${user.email}»...`);
 
     return new SignJWT(tokenPayload)
-      .setProtectedHeader({alg: JWT_ALGORITHM})
+      .setProtectedHeader({alg: JWT_CONFIG.ALGORITHM})
       .setIssuedAt()
-      .setExpirationTime(JWT_EXPIRED)
+      .setExpirationTime(JWT_CONFIG.EXPIRATION)
       .sign(secretKey);
   }
 

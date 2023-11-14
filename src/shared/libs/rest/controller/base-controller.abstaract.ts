@@ -19,8 +19,7 @@ export abstract class BaseController implements Controller {
 
   constructor(
     protected readonly logger: Logger
-  ) {
-  }
+  ) {}
 
   public addRoute(route: Route) {
     const wrapperAsyncHandler = expressAsyncHandler(route.handler.bind(this));
