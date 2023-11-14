@@ -518,41 +518,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/generalError'
 
-  /offers/{offerId}/comments:
-    get:
-      tags:
-        - offers
-      summary: List of comments
-      description: Returns a list of last comments for a given offer.
-      parameters:
-        - in: path
-          name: offerId
-          schema:
-            type: string
-            required: true
-            description: The id of the offer.
-      responses:
-        '200':
-          description: List of comments.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/comment'
-        '400':
-          description: offerId is not correct.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/validationError'
-        '404':
-          description: Offer with id «id» not exists
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/generalError'
-
   /offers/{offerId}/preview:
     post:
       tags:
@@ -706,6 +671,41 @@ paths:
                 $ref: '#/components/schemas/generalError'
         '404':
           description: Offer with id «id» not exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/generalError'
+
+  /comments/{offerId}/:
+    get:
+      tags:
+        - comments
+      summary: List of comments
+      description: Returns a list of last comments for a given offer.
+      parameters:
+        - in: path
+          name: offerId
+          schema:
+            type: string
+            required: true
+            description: The id of the offer.
+      responses:
+        '200':
+          description: List of comments.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+        '400':
+          description: offerId is not correct.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/validationError'
+        '404':
+          description: Offer with id «id» not exists
           content:
             application/json:
               schema:

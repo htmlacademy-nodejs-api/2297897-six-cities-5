@@ -19,7 +19,6 @@ import {
 } from '../../libs/rest/index.js';
 import {Components} from '../../types/index.js';
 import {CommentService} from '../comment/index.js';
-import {CommentRdo} from '../comment/rdo/comment.rdo.js';
 import {CreateOfferDto} from './dto/create-offer.dto.js';
 import {UpdateOfferDto} from './dto/update-offer.dto.js';
 import {OfferService} from './offer-service.interface.js';
@@ -99,16 +98,6 @@ export class OfferController extends BaseController {
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
         new ValidateAuthorMiddleware(this.offerService, 'Offer', 'offerId'),
         new ValidateDtoMiddleware(UpdateOfferDto)
-      ]
-    });
-
-    this.addRoute({
-      path: '/:offerId/comments',
-      method: HttpMethods.Get,
-      handler: this.getComments,
-      middlewares: [
-        new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
       ]
     });
 
@@ -194,13 +183,6 @@ export class OfferController extends BaseController {
     const updatedOffer = await this.offerService.findById(offerId);
 
     this.ok(res, fillDTO(OfferRdo, updatedOffer));
-  }
-
-  public async getComments({params}: Request<ParamOfferId>, res: Response) {
-    const {offerId} = params;
-    const comments = await this.commentService.findByOfferId(offerId);
-
-    this.ok(res, fillDTO(CommentRdo, comments));
   }
 
   public async uploadPreviewImage({params, file}: Request<ParamOfferId>, res: Response) {

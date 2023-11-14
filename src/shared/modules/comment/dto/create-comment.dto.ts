@@ -1,20 +1,20 @@
 import {IsInt, IsMongoId, IsString, Length, Max, Min} from 'class-validator';
 
 import {COMMENT_CONSTANT_VALUES} from '../comment.constant.js';
-import {CreateCommentValidationMessages} from './create-comment.message.js';
+import {CREATE_COMMENT_VALIDATION_MESSAGES} from './create-comment.message.js';
 
 export class CreateCommentDto {
-  @IsString({message: CreateCommentValidationMessages.Description.invalidFormat})
-  @Length(COMMENT_CONSTANT_VALUES.Description.minLength, COMMENT_CONSTANT_VALUES.Description.maxLength, {message: CreateCommentValidationMessages.Description.lengthField})
+  @IsString({message: CREATE_COMMENT_VALIDATION_MESSAGES.DESCRIPTION.INVALID_FORMAT})
+  @Length(COMMENT_CONSTANT_VALUES.DESCRIPTION.MIN_LENGTH, COMMENT_CONSTANT_VALUES.DESCRIPTION.MAX_LENGTH, {message: CREATE_COMMENT_VALIDATION_MESSAGES.DESCRIPTION.LENGTH_FIELD})
   public description: string;
 
-  @IsInt({message: CreateCommentValidationMessages.Rating.invalidFormat})
-  @Min(COMMENT_CONSTANT_VALUES.Rating.minValue, {message: CreateCommentValidationMessages.Rating.minValue})
-  @Max(COMMENT_CONSTANT_VALUES.Rating.maxValue, {message: CreateCommentValidationMessages.Rating.minValue})
+  @IsInt({message: CREATE_COMMENT_VALIDATION_MESSAGES.RATING.INVALID_FORMAT})
+  @Min(COMMENT_CONSTANT_VALUES.RATING.MIN_VALUE, {message: CREATE_COMMENT_VALIDATION_MESSAGES.RATING.MIN_VALUE})
+  @Max(COMMENT_CONSTANT_VALUES.RATING.MAX_VALUE, {message: CREATE_COMMENT_VALIDATION_MESSAGES.RATING.MIN_VALUE})
   public rating: number;
 
   public authorId: string;
 
-  @IsMongoId({message: CreateCommentValidationMessages.OfferId.invalidFormat})
+  @IsMongoId({message: CREATE_COMMENT_VALIDATION_MESSAGES.OFFER_ID.INVALID_FORMAT})
   public offerId: string;
 }

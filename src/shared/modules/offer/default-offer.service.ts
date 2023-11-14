@@ -9,7 +9,7 @@ import {Cities, Components, SortType} from '../../types/index.js';
 import {UserEntity} from '../user/index.js';
 import {CreateOfferDto} from './dto/create-offer.dto.js';
 import {UpdateOfferDto} from './dto/update-offer.dto.js';
-import {DEFAULT_OFFER_COUNT, PREMIUM_OFFERS_COUNT} from './offer.constant.js';
+import {OFFER_CONSTANT_VALUES} from './offer.constant.js';
 import {OfferEntity} from './offer.entity.js';
 import {OfferService} from './offer-service.interface.js';
 
@@ -30,7 +30,7 @@ export class DefaultOfferService implements OfferService {
   }
 
   public async find(count?: number, authorId?: string): Promise<DocumentType<OfferEntity>[]> {
-    const limit = count ?? DEFAULT_OFFER_COUNT;
+    const limit = count ?? OFFER_CONSTANT_VALUES.DEFAULT_OFFER_COUNT;
     const user = await this.userModel.findById(authorId);
     const favoriteOffers = user?.favoriteOffers.map((offer) => offer.toString());
 
@@ -102,7 +102,7 @@ export class DefaultOfferService implements OfferService {
   }
 
   public async exists(documentId: string): Promise<boolean> {
-    return (!!await this.offerModel.exists({_id: documentId}));
+    return !!this.offerModel.exists({_id: documentId});
   }
 
   public async findById(offerId: string, userId?: string): Promise<DocumentType<OfferEntity> | null> {
@@ -279,7 +279,7 @@ export class DefaultOfferService implements OfferService {
         },
       },
       { $unset: 'comments', },
-      { $limit: PREMIUM_OFFERS_COUNT },
+      { $limit: OFFER_CONSTANT_VALUES.PREMIUM_OFFERS_COUNT },
       {
         $sort: {
           createdAt: SortType.Down

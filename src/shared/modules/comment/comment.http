@@ -12,3 +12,8 @@ Content-Type: application/json
 
 ###
 
+##Получение списка комментариев по идентификатору предложения
+
+GET http://localhost:4000/comments/65514fbb20cd96350a27f555 HTTP/1.1
+
+###

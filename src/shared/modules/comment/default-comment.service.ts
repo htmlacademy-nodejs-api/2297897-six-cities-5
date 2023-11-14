@@ -3,7 +3,7 @@ import {inject, injectable} from 'inversify';
 
 import {Logger} from '../../libs/logger/index.js';
 import {Components, SortType} from '../../types/index.js';
-import {DEFAULT_COMMENT_COUNT} from './comment.constant.js';
+import {COMMENT_CONSTANT_VALUES} from './comment.constant.js';
 import {CommentEntity} from './comment.entity.js';
 import {CommentService} from './comment-service.interface.js';
 import {CreateCommentDto} from './dto/create-comment.dto.js';
@@ -16,7 +16,7 @@ export class DefaultCommentService implements CommentService{
   ) {}
 
   public async exists(documentId: string): Promise<boolean> {
-    return (!!await this.commentModel.exists({_id: documentId}));
+    return !!this.commentModel.exists({_id: documentId});
   }
 
   public async create(dto: CreateCommentDto): Promise<DocumentType<CommentEntity>> {
@@ -29,7 +29,7 @@ export class DefaultCommentService implements CommentService{
     return this.commentModel
       .find({offerId})
       .sort({createdAt: SortType.Down})
-      .limit(DEFAULT_COMMENT_COUNT)
+      .limit(COMMENT_CONSTANT_VALUES.DEFAULT_COMMENT_COUNT)
       .populate('authorId');
   }
 

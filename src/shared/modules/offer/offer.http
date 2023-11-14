@@ -65,12 +65,6 @@ Content-Type: application/json
 
 ###
 
-##Получение списка комментариев по идентификатору предложения
-
-GET http://localhost:6000/offers/654b5b079e0d7757ac041700/comments HTTP/1.1
-
-###
-
 ##Обновление превью предложения
 PATCH http://localhost:6000/offers/654d12cab602dc1c8a910c04/preview HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFub25AYW5vbmltb3VzLmNvbSIsIm5hbWUiOiJBbm9uVXNlciIsImlkIjoiNjU0YWE1YzNjNDBkYTk1NTk5ZjRhM2M4IiwiaWF0IjoxNjk5MzkzNTMwLCJleHAiOjE2OTk1NjYzMzB9.0oRC4cVF-68Kb0hnPE6ZsPouUQTCkW0TEwXDN6dKT_g

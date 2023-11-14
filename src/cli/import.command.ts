@@ -7,7 +7,7 @@ import {ConsoleLogger, Logger} from '../shared/libs/logger/index.js';
 import {DefaultOfferService, OfferModel, OfferService} from '../shared/modules/offer/index.js';
 import {DefaultUserService, UserModel, UserService} from '../shared/modules/user/index.js';
 import {Offer} from '../shared/types/index.js';
-import {DEFAULT_DB_PORT, DEFAULT_USER_PASSWORD} from './command.constant.js';
+import {DATABASE_CONFIG} from './command.constant.js';
 import {Command} from './command.interface.js';
 
 export class ImportCommand implements Command {
@@ -46,7 +46,7 @@ export class ImportCommand implements Command {
   private async saveOffer(offer: Offer) {
     const user = await this.userService.findOrCreate({
       ...offer.author,
-      password: DEFAULT_USER_PASSWORD
+      password: DATABASE_CONFIG.DEFAULT_USER_PASSWORD
     }, this.salt);
 
     await this.offerService.create({
@@ -73,7 +73,7 @@ export class ImportCommand implements Command {
     host: string, dbName: string, salt: string
   ): Promise<void> {
 
-    const uri = getMongoURI(login, password, host, DEFAULT_DB_PORT, dbName);
+    const uri = getMongoURI(login, password, host, DATABASE_CONFIG.DEFAULT_DB_PORT, dbName);
     this.salt = salt;
 
     await this.databaseClient.connect(uri);
