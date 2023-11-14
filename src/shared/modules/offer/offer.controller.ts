@@ -156,7 +156,6 @@ export class OfferController extends BaseController {
     {body, tokenPayload}: CreateOfferRequest,
     res: Response
   ) {
-    console.log(body);
     const result = await this.offerService.create({...body, authorId: tokenPayload.id });
     const createdOffer = await this.offerService.findById(result.id);
 
